@@ -21,9 +21,9 @@ public class Level {
 		this.name = name;
 		rooms = new HashMap<String, Grid>();
 		String roomname = "Room";
-		rooms.put(roomname, new Grid(roomname, "Resources/Tilesets/cragmaw-castle-use-later.tmx"));
+		//rooms.put(roomname, new Grid(roomname, "Resources/Tilesets/cragmaw-castle-use-later.tmx"));
 		rgen = new GridGenerator();
-		currentRoom = rooms.get(roomname);//rgen.generateGrid("Room 1", MainApp.getGameRows(), MainApp.getGameCols());
+		currentRoom = rgen.generateGrid("Room 1", MainApp.getGameRows(), MainApp.getGameCols());
 		turns = new TurnController(Turn.Player);
 	}
 	

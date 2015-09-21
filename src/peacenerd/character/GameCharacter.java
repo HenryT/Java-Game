@@ -3,8 +3,6 @@ package peacenerd.character;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import peacenerd.abilities.Ability.*;
-import peacenerd.character.GameCharacter.Stat;
 import peacenerd.abilities.*;
 import peacenerd.combat.*;
 import peacenerd.combat.Weapon.*;
