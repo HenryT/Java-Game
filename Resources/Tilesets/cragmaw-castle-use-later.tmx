@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="45" height="50" tilewidth="24" tileheight="24" nextobjectid="1">
+ <tileset firstgid="1" name="oryx_16bit_fantasy_world_trans" tilewidth="24" tileheight="24">
+  <image source="../../../../Desktop/DnD/TargonRoll20/Art/dungeons/onyx/oryx_16bit_fantasy_world_trans.png" width="1366" height="1007"/>
+ </tileset>
+ <layer name="Tile Layer 1" width="45" height="50">
+  <data encoding="base64" compression="zlib">
+   eJztWG1uwjAMjSgX2/8dghPsBHR042MDeocNafu5I2zkaEtFLVxjJ07aIpBi6amlaZyXF8dx+S6MORRmdi/4OvG1H+56LzgMxLmajg+Jc4qvhcOrMaZ2KBEeJ91nS4ffootS6NegJH3dWJ+Us3s2g/GpX/D9hu5rNMY7wwej8blG7zy4PpU5XfF7L4KfKsC58owv+dwHOHM+Oc6+/qmcY+einRNgMYLOkk+NTlIbxFdzlWKsD2dJr9BctGuXGs9b05073tsb9Pu59T9H+szJ3oR3JM7adRtjD4Z0lNrp8zHiOTZmQu10LFhjyKWw1usA55W5jAnfuaDR2cf5Z9J9bzHl4ePsg1YvTXtzzuyYuCc8LYA7u4Hzk/NxLE5XColbKD9z7dI5Q3X11UgcZ1ucfx8V3GLAcV6Zy/pCy/kP6dxwBe7S+KGcxbX79u0+gTOND7jHY+Nabkf2LK3LNiifazhXCZwt4muLM2e8njE5UYrdITlze9ASbWI4c5pKuaQm+VjDmQL81G0MwBprazWNzphrTN5oeVuMPjkZg8s3dM2kMyT2e7DRXqoJ+uS9V7Jmq1bnZYLOGs4p9QjNdZKP2DNF4gx1S4lijmpWBkD7+OJtDJ37xHWoz34gzqH8sGV0pd8L+BvhGpw1Okt1YKzOQ8WGVE/D/foGOYdqah/mzFy5+qRk5p/KmTtnrgWJz1D/MV4TDeds2bJly5YtW7Zs2bJluzX7B/vM68Q=
+  </data>
+ </layer>
+ <layer name="Tile Layer 2" width="45" height="50">
+  <data encoding="base64" compression="zlib">
+   eJztWEGO2zAMdGBfc8iDcuhP8pi+I/BL7PwjbTfZ3aYL5BM1t2J2PB1KToqiPWgAIY4kiiOaFCk3TYxVmxlM2MPzZjWT7f15Df32jM3lUJbXVUD5iEdJlz/7mK/Ba+f0roX8ZhWvsV7Nf93G0X59/HPX7IIpEiX7GZTdkXeb3qHrjmzyqH6FY9c0P7oHhQNcpvWuqS3FmPa+TS2CjZ2mdZ+n9ja1l+4mP5uj1kGfZNu+dh+8kQ/r3pIuw9DefvuB5JyDrX9M7dz9znP7S/6g9twGsW04k41dX7SWsg3Onfa2s+b/je8T8VUY2nm8GOforCK5nrmp9XBM2WpLv68LfA91LIk15hDNcQg/2TWEtJce+1guAp+Lfwtj4EtHsDHbI8XCe2yoWAr03GKphNwZwUhcDvbsvvwCPg36D0qebbtvPs5bf1ccy8jT3zv7Dv5GvvUM58VbN7d5DsgZ828JzIM5uR1tT+jPPj7ZdXeBnGLcvz+QXyKuUT/bnPscA/iY7++cckkErFOwb8rTveLzKV6qyDlx7JfInSn3qXyHnD2PUN34jiWcx/TOlQ1FTpntQeWOUgyX6s17ofSBX/fYP0LMou9bG8U5rnzkX6GQpyUUb9/Tvf58hLN1FGfEF1Fz2tgT9A3C/g7zY7xLKO73cr6kWpL9GfVz3Xal2kjldwTfk/4UVgefOh1/yBFxTDJNo30E50d3CrinHLCf56t3dy7o575rqsvVHSU3ZmAbK7sveQ9csxvUOYg4FXKe3zXMJ9qUU0v1XM5vcraM6g2ee+ricYP7RnT+lu71kT+5rqj+UrCch5wdQ1BDYuxFXFqQ2zd532Ab2Zn2tdC+dZozrskofRvhc5Dn4j3JOS+tIRHs/wysiUsxthF+4ojuPks4R/HI56Oqr9hPqW46uK197iPfZtT3H4zJnP8vvUOhPv4edy/vR2QUbM9L6qOIp+UZ70NbohzKc39JXw5W4yt+ObTkwy5T8h/MA7jf3L7UWdyCH/0P9WhFRUVFRUVFRUVFRUUOPwFYAt1p
+  </data>
+ </layer>
+ <layer name="Tile Layer 3" width="45" height="50">
+  <data encoding="base64" compression="zlib">
+   eJzt1kkOgCAMQFGWHEnvfzG3hCmVltjifwkLYyhlJiUAtSuPi7TuKI4mF01Mae6ryvx2KONatvEm1ur8RaRdtx5o1/Nor/W+Z3Wijt/pVuaKOW7VZ7N2PFbrSubOoh2Ltq39fQ3OzPZs7xzf0b7neD13bssXLPqqOaej7ilPeWvOpt67q/wXiVW+vDt8kNwru++W6KTjdwrpmjm1/wAAAADg2QNm6iTG
+  </data>
+ </layer>
+ <layer name="Tile Layer 4" width="45" height="50">
+  <data encoding="base64" compression="zlib">
+   eJzt2G0OgjAMBuCNX3olY0KE/34dR27CjbyVEJnMQqFjY4PkfRJiRBhd6dhQKQCgSj3cd9DfbU5Ojmu/1w7nUxU556j7tkzbXMwmbqm3e3g/3PV92uTU84eIFF0OpWhffOM46/9PiXKkjkwcdL/03o/1g7tv10ypW7PdM1nbKfnWc4gx5aPq7jUXB8XVozQPocYV9ELldI3n6Bra/r4ijQ9qLkcpc3iZ+C13nIdS2ksdcuy5lo7NrT7/Hs1c+1w43261TzHZOZDUr8t6LBbX9dhUP1OMYfuaNL9ja1qDziWoZ74+6bvilpwCxRazdk3t2e/whWM/6Ly/9H+AmLiYzbvIXtYqAAAAAAAAAC4+2nkjtw==
+  </data>
+ </layer>
+</map>
