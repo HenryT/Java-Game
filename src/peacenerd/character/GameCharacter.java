@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import peacenerd.abilities.Ability.*;
+import peacenerd.character.GameCharacter.Stat;
 import peacenerd.abilities.*;
 import peacenerd.combat.*;
 import peacenerd.combat.Weapon.*;
@@ -57,10 +58,12 @@ public class GameCharacter extends Moveable {
 		Piercing(true);
 		
 		private boolean isPhysical;
+		
 		DamageType(boolean b) {
 			this.isPhysical = b;
 		}
 		
+		//true if the damage type is Physical damage
 		boolean isPhysical() {
 			return this.isPhysical;
 		}
@@ -88,6 +91,7 @@ public class GameCharacter extends Moveable {
 			this.duration--;
 		}
 		
+		//Used to get a status effect with a particular duration (rather than the default zero)
 		static StatusEffect get(StatusEffect s, int duration) {
 			StatusEffect ret = s;
 			ret.duration = duration;
@@ -95,6 +99,7 @@ public class GameCharacter extends Moveable {
 		}
 	}
 	
+	//Used to avoid rampant null checks. This character is never drawn or updated
 	public static GameCharacter nullChar = new GameCharacter("", "Resources/Images/img1.png");
 	
 	/* Default Value Information */
@@ -106,6 +111,7 @@ public class GameCharacter extends Moveable {
 	
 	private static int defaultNumSpellLevels = 9;
 	private static int defaultSpellSlots = 0;
+	private static int defaultMaxLevel = 20;
 	
 	//Character Information
 	private String name;
@@ -127,34 +133,47 @@ public class GameCharacter extends Moveable {
 	
 	//Combat Information
 	private Weapon equippedWeapon;
+	
 	protected Stat meleeAttackStat;
 	protected Stat rangedAttackStat;
+	protected Stat spellCastingStat;
+	protected int level;
+	
 	private int baseAC;
 	private int damageReduction;
 	private int weaponCritRange;
 	private int spellCritRange;
 	
+	//Actions
 	private int numAttacks;
 	private int[] actionsLeftMax;
 	private HashMap<ActionType, Integer> actionsLeft;
 	
+	//Abilities and Spells
 	private HashMap<String, Ability> abilities;
-	private ArrayList<Ability> activeAbilities;
 	
-	private ArrayList<Integer> spellSlots;
-	private ArrayList<Integer> maxSpellSlots;
+	private int[][] spellSlots;
+	private int[][] maxSpellSlots;
 	
+	//Status Effects and damage vulnerabilities
 	private ArrayList<StatusEffect> activeStatusEffects;
 	private HashMap<DamageType, Boolean> damageResistance;
 	private HashMap<DamageType, Boolean> damageVuln;
 	
+	//Weapon proficiencies and bonuses
 	private HashMap<WeaponType, Boolean> weaponProfs;
+	private HashMap<WeaponType, Integer> weaponHitBonus;
+	private HashMap<WeaponType, Integer> weaponDamageBonus;
+	
+	//Saving Throw Bonus
+	private HashMap<Stat, Integer> saveBonuses;
 
 	public GameCharacter(String name, String imageFile)
 	{
 		super(imageFile);
 		this.name = name;
 		this.isDead = false;
+		this.level = 1;
 		
 		this.speed = defaultSpeed;
 		this.movementLeft = defaultSpeed;
@@ -170,13 +189,15 @@ public class GameCharacter extends Moveable {
 		
 		this.meleeAttackStat = Stat.Strength;
 		this.rangedAttackStat = Stat.Dexterity;
+		this.spellCastingStat = Stat.Intelligence;
 		this.baseAC = defaultArmor;
 		
-		this.activeStatusEffects = new ArrayList<StatusEffect>();
-		this.abilities = new HashMap<String, Ability>();
-		this.activeAbilities = new ArrayList<Ability>();
-		this.damageVuln = new HashMap<DamageType, Boolean>();
-		this.damageResistance = new HashMap<DamageType, Boolean>();
+		this.numAttacks = 1;
+		
+		this.weaponProfs = new HashMap<WeaponType, Boolean>();
+		this.weaponHitBonus = new HashMap<WeaponType, Integer>();
+		this.weaponDamageBonus = new HashMap<WeaponType, Integer>();
+		this.saveBonuses = new HashMap<Stat, Integer>(); 
 		
 		//Add Weapon Proficiencies - defaults to no proficiencies except unarmed
 		for (int i = 0; i < WeaponType.values().length; i++) {
@@ -187,23 +208,30 @@ public class GameCharacter extends Moveable {
 		//Equip an unarmed weapon
 		this.equipWeapon(new Weapon(WeaponType.Unarmed));
 		
-		this.weaponCritRange = this.equippedWeapon.getCritRange();
-		this.numAttacks = 1;
-		
+		//by default, you have 1 regular action or weapon attacks, and 1 swift action
 		int[] t = {1,1,numAttacks};
 		this.actionsLeftMax = t;
 		this.actionsLeft = ActionType.actionsLeft(actionsLeftMax);
 		
-		//There are 9 spell levels, so we need 10 slots to ignore the first array slot */
-		this.spellSlots = new ArrayList<Integer>();
-		this.maxSpellSlots = new ArrayList<Integer>();
+		this.activeStatusEffects = new ArrayList<StatusEffect>();
+		this.abilities = new HashMap<String, Ability>();
+		this.damageVuln = new HashMap<DamageType, Boolean>();
+		this.damageResistance = new HashMap<DamageType, Boolean>();
+		this.weaponCritRange = this.equippedWeapon.getCritRange();
 		
-		//Initialize spell slots
-		for (int i = 1; i <= defaultNumSpellLevels; i++)
-		{
-			//Start with 0 spell slots by default
-			maxSpellSlots.add(defaultSpellSlots);
-			spellSlots.add(defaultSpellSlots);
+		//Add Weapon Bonuses - defaults to no bonuses
+		for (int i = 0; i < WeaponType.values().length; i++) {
+			this.weaponDamageBonus.put(WeaponType.values()[i], 0);
+			this.weaponHitBonus.put(WeaponType.values()[i], 0);
+		}
+		
+		//There are 9 spell levels, so we need 10 slots to ignore the first array slot */
+		this.spellSlots = new int[defaultMaxLevel+1][defaultNumSpellLevels+1];
+		this.maxSpellSlots = new int[defaultMaxLevel+1][defaultNumSpellLevels+1];
+		
+		//Save Bonus
+		for (int i = 0; i < Stat.values().length; i++) {
+			this.saveBonuses.put(Stat.values()[i], 0);
 		}
 		
 		//Generate ID
@@ -212,13 +240,11 @@ public class GameCharacter extends Moveable {
 			+ "-" + Double.toString(Math.random())
 			+ "-" + Double.toString(Math.PI * Math.random());
 		
-		//Default Abilities
+		//Default Abilities - Attack with equipped weapon
 		this.addAbility(Ability.defaultWeaponAttack);
-		this.activeAbilities.add(Ability.defaultWeaponAttack);
 		
 		// TEST 
 		this.addAbility(Ability.magicMissile);
-		this.activeAbilities.add(Ability.magicMissile);
 		
 		
 	}
@@ -240,6 +266,7 @@ public class GameCharacter extends Moveable {
 		return this.equippedWeapon;
 	}
 	
+	//Add and get abilities
 	public Ability getAbility(String name) {
 		return this.abilities.get(name);
 	}
@@ -248,10 +275,7 @@ public class GameCharacter extends Moveable {
 		this.abilities.put(ability.getName(), ability);
 	}
 	
-	public Ability getActiveAbility(int n) {
-		return activeAbilities.get(n);
-	}
-	
+	//Critical hit ranges
 	public int getWeaponCritRange() {
 		return this.weaponCritRange;
 	}
@@ -261,13 +285,14 @@ public class GameCharacter extends Moveable {
 	}
 	
 	public int getSpellCritRange() {
-		return this.weaponCritRange;
+		return this.spellCritRange;
 	}
 	
 	public void setSpellCritRange(int newrange) {
 		this.spellCritRange = newrange;
 	}
 	
+	//Stat used for weapon attacks
 	public void setMeleeAttackStat(Stat stat) {
 		this.meleeAttackStat = stat;
 	}
@@ -276,12 +301,30 @@ public class GameCharacter extends Moveable {
 		this.rangedAttackStat = stat;
 	}
 	
+	//Weapon Profs
 	public boolean hasWeaponProficiency(WeaponType wt) {
 		return this.weaponProfs.get(wt);
 	}
 	
 	public void addWeaponProficiency(WeaponType wt) {
 		this.weaponProfs.put(wt, true);
+	}
+	
+	//Weapon Bonuses
+	public int getWeaponHitBonus(WeaponType wt) {
+		return this.weaponHitBonus.get(wt);
+	}
+	
+	public int getWeaponDamageBonus(WeaponType wt) {
+		return this.weaponDamageBonus.get(wt);
+	}
+	
+	public void addWeaponHitBonus(WeaponType wt, int bonus) {
+		this.weaponHitBonus.put(wt, bonus);
+	}
+	
+	public void addWeaponDamageBonus(WeaponType wt, int bonus) {
+		this.weaponDamageBonus.put(wt, bonus);
 	}
 	
 	//equips a weapon, returning true if this character has the correct proficiency, false otherwise
@@ -301,7 +344,7 @@ public class GameCharacter extends Moveable {
 	
 	/* returns number of slots left for the given level */
 	public int getSpellSlots(int slot) {
-		return spellSlots.get(slot);
+		return spellSlots[this.level][slot];
 	}
 	
 	/* Restores a specific amount of used spell slots
@@ -318,15 +361,15 @@ public class GameCharacter extends Moveable {
 			return;
 		
 		for (int i = 0; i < slots.length-1; i+=2) {
-			this.spellSlots.set(slots[i],
-					Math.min(this.maxSpellSlots.get(i), this.spellSlots.get(i) + slots[i+1]));
+			this.spellSlots[this.level][i] = 
+					Math.min(this.maxSpellSlots[this.level][i], this.spellSlots[this.level][i] + slots[i+1]);
 		}
 	}
 	
 	/* Restores all used spell slots */
 	public void refreshSpellSlots() {
-		for (int i = 1; i < this.spellSlots.size(); i++) {
-			this.spellSlots.set(i, this.maxSpellSlots.get(i));
+		for (int i = 1; i < this.spellSlots[this.level].length; i++) {
+			this.spellSlots[this.level][i] = this.maxSpellSlots[this.level][i];
 		}
 	}
 	
@@ -338,19 +381,27 @@ public class GameCharacter extends Moveable {
 	 * 		- odd numbered arguments refer to the level of spell slot to refresh
 	 * 		- amount of spells in a slot will not exceed the max spell slot amount (given by the maxSpellSlots array)
 	 */
-	public void setMaxSpellSlots(int ... slots) {
-		//odd numbered arguments means this method was called wrong
-		if (slots.length % 2 != 0)
-			return;
-		
-		for (int i = 0; i < slots.length-1; i+=2) {
-			this.maxSpellSlots.set(slots[i], slots[i+1]);
-		}
+	public void setMaxSpellSlots(int[][] slots) {
+		if (this.spellSlots.length == slots.length
+				&& this.spellSlots[0].length == slots[0].length)
+			this.spellSlots = slots;
+	}
+	
+	//add a spell slot 
+	public void increaseMaxSpellSlots(int slot, int amount) {
+		this.spellSlots[this.level][slot] += amount;
+	}
+	
+	//remove a spell slot
+	public void decreaseMaxSpellSlots(int slot, int amount) {
+		this.spellSlots[this.level][slot] = Math.max(0, this.spellSlots[this.level][slot]-amount);
 	}
 	
 	/* Exhausts 'amount' number of level 'slot' spell slots */
 	public void useSpellSlot(int slot, int amount) {
-		this.spellSlots.set(slot, Math.max(0, this.spellSlots.get(slot) - amount));
+		if (slot > defaultNumSpellLevels)
+			return;
+		this.spellSlots[this.level][slot] = Math.max(0, this.spellSlots[this.level][slot] - amount);
 	}
 	
 	/* Information */
@@ -369,6 +420,7 @@ public class GameCharacter extends Moveable {
 		return Math.max(minModifier, (toReturn-10)/2);
 	}
 	
+	//Rolls a saving throw for a given stat
 	public int rollSave(Stat stat) {
 		return Dice.D20.roll() + this.getMod(stat);
 	}
@@ -385,6 +437,16 @@ public class GameCharacter extends Moveable {
 		}
 	}
 	
+	//Save Bonuses
+	public int getSaveBonus(Stat saveStat) {
+		return this.saveBonuses.get(saveStat);
+	}
+	
+	public void addSaveBonus(Stat saveStat, int bonus) {
+		this.saveBonuses.put(saveStat, bonus);
+	}
+	
+	//Basic Information
 	public int getCurrentHealth() {
 		return this.currentHealth;
 	}
